@@ -2,26 +2,107 @@
 <html>
 <head>
   <title>Salarium Chain MVP</title>
-  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+  <meta charset="UTF-8">
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9f9f9;
+      padding: 2em;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      border-radius: 8px;
+      padding: 2em;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #111;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-top: 1em;
+    }
+    input {
+      width: 100%;
+      padding: 0.5em;
+      margin-top: 0.25em;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      margin-top: 1em;
+      padding: 0.75em;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      width: 100%;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 <body>
-  <h1>Salarium Chain Interface</h1>
+  <div class="container">
+    <h1>Salarium Chain Interface</h1>
 
-  <h3>Post a Task</h3>
-  <input id="taskDesc" placeholder="Task Description">
-  <input id="taskCode" placeholder="Secret Code (e.g. axe2025)">
-  <button onclick="postTask()">Post Task</button>
+    <h3>Post a Task</h3>
+    <label for="taskDesc">Task Description</label>
+    <input id="taskDesc" placeholder="e.g. Stack firewood">
+    <label for="taskCode">Secret Code</label>
+    <input id="taskCode" placeholder="e.g. axe2025">
+    <button onclick="postTask()">Post Task</button>
 
-  <h3>Submit Proof</h3>
-  <input id="taskId" placeholder="Task ID">
-  <input id="proofCode" placeholder="Secret Code">
-  <button onclick="submitProof()">Submit Proof</button>
+    <h3>Submit Proof</h3>
+    <label for="taskId">Task ID</label>
+    <input id="taskId" placeholder="e.g. 1">
+    <label for="proofCode">Secret Code</label>
+    <input id="proofCode" placeholder="e.g. axe2025">
+    <button onclick="submitProof()">Submit Proof</button>
+  </div>
 
   <script>
     let web3;
     let contract;
-    const contractAddress = 'PASTE_YOUR_SALARIUM_CONTRACT';
-    const contractABI = PASTE_YOUR_ABI_HERE;
+    const contractAddress = '0x53C584C52cD532293824a79849314968BE77ff91';
+    const contractABI = [
+      {
+        "inputs": [
+          {"internalType": "address", "name": "_gritToken", "type": "address"},
+          {"internalType": "address", "name": "_grainToken", "type": "address"}
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "inputs": [
+          {"internalType": "string", "name": "description", "type": "string"},
+          {"internalType": "bytes32", "name": "proofHash", "type": "bytes32"}
+        ],
+        "name": "postTask",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {"internalType": "uint256", "name": "taskId", "type": "uint256"},
+          {"internalType": "string", "name": "proof", "type": "string"}
+        ],
+        "name": "submitProof",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ];
 
     async function connect() {
       if (window.ethereum) {
@@ -46,9 +127,3 @@
       const id = document.getElementById("taskId").value;
       const code = document.getElementById("proofCode").value;
       contract.methods.submitProof(id, code).send({ from: accounts[0] });
-    }
-
-    window.onload = connect;
-  </script>
-</body>
-</html>
