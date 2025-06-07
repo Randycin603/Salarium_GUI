@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Salarium Chain MVP</title>
+  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+</head>
+<body>
+  <h1>Salarium Chain Interface</h1>
+
+  <h3>Post a Task</h3>
+  <input id="taskDesc" placeholder="Task Description">
+  <input id="taskCode" placeholder="Secret Code (e.g. axe2025)">
+  <button onclick="postTask()">Post Task</button>
+
+  <h3>Submit Proof</h3>
+  <input id="taskId" placeholder="Task ID">
+  <input id="proofCode" placeholder="Secret Code">
+  <button onclick="submitProof()">Submit Proof</button>
+
+  <script>
+    let web3;
+    let contract;
+    const contractAddress = 'PASTE_YOUR_SALARIUM_CONTRACT';
+    const contractABI = PASTE_YOUR_ABI_HERE;
+
+    async function connect() {
+      if (window.ethereum) {
+        web3 = new Web3(window.ethereum);
+        await window.ethereum.enable();
+        contract = new web3.eth.Contract(contractABI, contractAddress);
+      } else {
+        alert('Install MetaMask to use this.');
+      }
+    }
+
+    async function postTask() {
+      const accounts = await web3.eth.getAccounts();
+      const desc = document.getElementById("taskDesc").value;
+      const code = document.getElementById("taskCode").value;
+      const proofHash = web3.utils.keccak256(code);
+      contract.methods.postTask(desc, proofHash).send({ from: accounts[0] });
+    }
+
+    async function submitProof() {
+      const accounts = await web3.eth.getAccounts();
+      const id = document.getElementById("taskId").value;
+      const code = document.getElementById("proofCode").value;
+      contract.methods.submitProof(id, code).send({ from: accounts[0] });
+    }
+
+    window.onload = connect;
+  </script>
+</body>
+</html>
